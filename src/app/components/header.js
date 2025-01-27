@@ -42,7 +42,7 @@ export default function Header({
     { name: "Favorite", icon: HiHeart, function: onClickFavorite },
     { name: "Cart", icon: HiShoppingCart, function: onClickCart },
     { name: "Divider", icon: "", function: "" },
-    { name: "Logout", icon: HiLogout, function: () => router.push("/") },
+    // { name: "Logout", icon: HiLogout, function: () => router.push("/") },
   ];
 
   return (
