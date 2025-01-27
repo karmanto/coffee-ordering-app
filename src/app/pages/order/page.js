@@ -11,6 +11,7 @@ import { VoucherPromo } from "@/app/components/voucherpromo";
 import { Done } from "@/app/components/done";
 import { OrderCart } from "@/app/components/ordercart";
 import { motion as m } from "framer-motion";
+import data from './../../../../db.json';
 
 const menusType = [
   "All",
@@ -52,21 +53,10 @@ export default function Order() {
   const [done, setDone] = useState(false); //this must be for Redux, but not now
   const modalRef = useRef();
 
-  const getDataMenu = async () => {
-    try {
-      const request = await fetch(`https://mock-server-teal.vercel.app/menu`);
-      // const request = await fetch(`http://localhost:4000/menu`);
-      if (!request.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-      const response = await request.json();
-
-      setItemsOrder(response);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  const getDataMenu = () => {
+  setItemsOrder(data.menu);
+  setIsLoading(false);
+};
 
   useEffect(() => {
     getDataMenu();
