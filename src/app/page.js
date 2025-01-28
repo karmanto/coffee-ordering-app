@@ -11,13 +11,13 @@ export default function Home() {
   const modalRef = useRef();
   const router = useRouter();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      router.push("/pages/order");
-    }, 2000);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     router.push("/pages/order");
+  //   }, 2000);
 
-    return () => clearTimeout(timer);
-  }, [router]);
+  //   return () => clearTimeout(timer);
+  // }, [router]);
 
   useEffect(() => {
     let handler = (e) => {
@@ -44,7 +44,7 @@ export default function Home() {
               quality={100}
               unoptimized
               priority
-              className="w-full h-full object-cover"
+              className="w-full h-screen object-cover"
             />
           </div>
           {/* <div className="flex flex-col items-center justify-center mt-[90px]">
