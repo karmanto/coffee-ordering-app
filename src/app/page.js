@@ -11,13 +11,13 @@ export default function Home() {
   const modalRef = useRef();
   const router = useRouter();
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     router.push("/pages/order");
-  //   }, 2000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      router.push("/pages/order");
+    }, 2000);
 
-  //   return () => clearTimeout(timer);
-  // }, [router]);
+    return () => clearTimeout(timer);
+  }, [router]);
 
   useEffect(() => {
     let handler = (e) => {
