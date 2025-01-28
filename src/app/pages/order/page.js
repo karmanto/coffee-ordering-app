@@ -53,6 +53,9 @@ export default function Order() {
   const [done, setDone] = useState(false); //this must be for Redux, but not now
   const modalRef = useRef();
 
+  const [location, setLocation] = useState({ latitude: null, longitude: null });
+  const [error, setError] = useState(null);
+
   const getDataMenu = () => {
   setItemsOrder(data.menu);
   setIsLoading(false);
@@ -60,6 +63,23 @@ export default function Order() {
 
   useEffect(() => {
     getDataMenu();
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude, accuracy } = position.coords;
+
+          setLocation({ latitude, longitude, accuracy });
+          setError(null);
+        },
+        (err) => {
+          setError(err.message);
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by this browser.");
+    }
+
   }, []);
 
   useEffect(() => {
@@ -290,6 +310,15 @@ export default function Order() {
               />
             )}
             <div className="w-screen min-h-screen mt-[51px] bg-[#FFFFFF]">
+            <p className="flex text-sm text-black justify-center items-center">
+              latitude {location?.latitude}
+            </p>
+            <p className="flex text-sm text-black justify-center items-center">
+              longitude {location?.longitude}
+            </p>
+            <p className="flex text-sm text-black justify-center items-center">
+              accuracy {location?.accuracy}
+            </p>
               {/* ========== SPA Render Components ========= */}
               <div className="w-full max-w-[414px] p-3 pb-[62px] h-full space-y-3 overflow-hidden">
                 {currentPage == 0 ? (

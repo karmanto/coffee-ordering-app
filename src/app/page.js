@@ -14,7 +14,7 @@ export default function Home() {
   useEffect(() => {
     const timer = setTimeout(() => {
       router.push("/pages/order");
-    }, 3000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [router]);
@@ -37,13 +37,14 @@ export default function Home() {
         <div className="flex flex-col justify-center min-h-screen w-[414px] bg-green-500 content-center">
           <div className="flex justify-center ">
             <Image
-              src={"/./logo.svg"}
+              src={"/./natalogo.jpg"}
               width={200}
               height={200}
               alt="coffee company logo"
               quality={100}
               unoptimized
               priority
+              className="w-full h-full object-cover"
             />
           </div>
           {/* <div className="flex flex-col items-center justify-center mt-[90px]">
