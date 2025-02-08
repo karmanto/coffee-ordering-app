@@ -34,17 +34,17 @@ export default function Home() {
   return (
     <>
       <div className=" w-full flex justify-center">
-        <div className="flex flex-col justify-center min-h-screen w-[414px] bg-green-500 content-center">
+        <div className="flex flex-col justify-center min-h-screen w-[414px] content-center">
           <div className="flex justify-center ">
             <Image
-              src={"/./natalogo.jpg"}
+              src={"/./natafoodcourt.png"}
               width={200}
               height={200}
               alt="coffee company logo"
               quality={100}
               unoptimized
               priority
-              className="w-full h-screen object-cover"
+              className="w-full h-screen object-contain"
             />
           </div>
           {/* <div className="flex flex-col items-center justify-center mt-[90px]">
