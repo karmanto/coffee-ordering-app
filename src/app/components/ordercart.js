@@ -64,7 +64,7 @@ export const OrderCart = ({ itemsOrder, minusButtonHandler, plusButtonHandler, s
                   id={data.id}
                   onClick={(e) => showModal(e)}
                   className="max-w-[80px] max-h-[80px] border hover:border-green-400 rounded-xl transition-all"
-                  src={data.pic}
+                  src={data.pic_url}
                   width={80}
                   height={80}
                   alt="product image"

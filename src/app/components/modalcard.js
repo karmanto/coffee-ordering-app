@@ -26,7 +26,7 @@ export const ModalCard = ({
             <div>
               <Image
                 className={"rounded-t-lg w-full"}
-                src={detailModal?.pic}
+                src={detailModal?.pic_url}
                 width={330}
                 height={330}
                 alt="product image"

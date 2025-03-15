@@ -14,7 +14,7 @@ export const MenuCards = ({
 }) => {
   return (
     <div {...props} className="flex flex-col bg-[#FFFFFF] rounded-xl shadow-lg">
-      <div className="flex flex-col group">
+      <div className="flex flex-col flex-1 justify-center items-center group">
         {data?.favorite && (
           <div className="relative -mb-10 self-end w-fit z-10 p-1">
             <IoHeartCircleSharp className="float-right w-8 h-8 fill-red-600" />
@@ -24,14 +24,17 @@ export const MenuCards = ({
           id={data?.id}
           onClick={onClickModal}
           className="rounded-xl lg:rounded-b-none transition-all"
-          src={data?.pic}
+          src={data?.pic_url}
           width={200}
           height={200}
           alt="product image"
           quality={100}
           unoptimized
         />
-        <div onClick={onClickModal} className="hidden lg:flex opacity-0 group-hover:opacity-100 -mt-6 h-6 justify-center items-center text-white bg-black bg-opacity-60 rounded-t-xl transition-all duration-300">
+        <div
+          onClick={onClickModal}
+          className="hidden lg:flex opacity-0 group-hover:opacity-100 -mt-6 h-6 justify-center items-center text-white bg-black bg-opacity-60 rounded-t-xl transition-all duration-300"
+        >
           <FaEye />
         </div>
       </div>
@@ -41,7 +44,7 @@ export const MenuCards = ({
           <h1 className="flex text-base items-center font-bold text-green-600">
             {data?.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
           </h1>
-          <div className={`w-[76px] flex flex-row transition-all`}>
+          <div className="w-[76px] flex flex-row transition-all">
             {data.amount === 0 ? (
               <button
                 id={data?.id}

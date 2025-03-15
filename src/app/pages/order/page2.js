@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Header from "../../components/header";
 import { TabMenu } from "@/app/components/tabmenu";
 import { MenuCards } from "@/app/components/menucards";
@@ -11,7 +11,17 @@ import { VoucherPromo } from "@/app/components/voucherpromo";
 import { Done } from "@/app/components/done";
 import { OrderCart } from "@/app/components/ordercart";
 import { motion as m } from "framer-motion";
-import { fetchMenus, fetchCategories } from "@/app/api/route";
+import data from './../../../../db.json';
+
+const menusType = [
+  "All",
+  "Coffee",
+  "Non Coffee",
+  "Dessert",
+  "Manual Brew",
+  "Water",
+  "Foods",
+];
 
 const $Page = ["Order", "Best Seller", "Cart", "Logout"];
 
@@ -38,40 +48,19 @@ export default function Order() {
     totalPrice: 0,
     finalPrice: 0,
     payment: "",
-  });
+  }); //this must be for Redux, but not now
   const [radioChekced, setRadioChecked] = useState("gopay");
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState(false); //this must be for Redux, but not now
+  const modalRef = useRef();
 
-  const [skipMenus, setSkipMenus] = useState(0);
-  const [hasMoreMenus, setHasMoreMenus] = useState(true);
-  const limitMenus = 10;
-
-  const [categories, setCategories] = useState([]);
-  const limitCategories = 10;
-
-  const loadMenus = async () => {
-    setIsLoading(true);
-    const data = await fetchMenus(skipMenus, limitMenus);
-    if (data && data.length < limitMenus) {
-      setHasMoreMenus(false);
-    }
-    if (skipMenus === 0) {
-      setItemsOrder(data);
-    } else {
-      setItemsOrder((prev) => [...prev, ...data]);
-    }
-    setIsLoading(false);
-  };
-
-  const loadCategories = async () => {
-    const data = await fetchCategories(limitCategories);
-    setCategories(data);
-  };
+  const getDataMenu = () => {
+  setItemsOrder(data.menu);
+  setIsLoading(false);
+};
 
   useEffect(() => {
-    loadMenus();
-    loadCategories();
-  }, [skipMenus]);
+    getDataMenu();
+  }, []);
 
   useEffect(() => {
     if (currentPage === 0 || currentPage === 1) {
@@ -85,10 +74,11 @@ export default function Order() {
 
   useEffect(() => {
     const discountedPrice = (totalPrice.amount * discountAmount) / 100;
-    setTotalPrice((prev) => ({
-      ...prev,
+    setTotalPrice({
+      ...totalPrice,
       discounted: totalPrice.amount - discountedPrice,
-    }));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [discountAmount]);
 
   const tabMenuHandler = (e) => {
@@ -98,25 +88,25 @@ export default function Order() {
 
   const plusButtonHandler = (e, idButton = null) => {
     e.preventDefault();
-    const filteredItems = itemsOrder.map((data) => {
+    const filteredItems = itemsOrder?.map((data, idx) => {
       if (idButton) {
         if (data.id === idButton) {
-          setTotalPrice((prev) => ({
-            ...prev,
-            amount: prev.amount + data.price,
-            length: prev.length + 1,
-          }));
+          setTotalPrice({
+            ...totalPrice,
+            amount: totalPrice.amount + data.price,
+            length: totalPrice.length + 1,
+          });
           setApproved({ ...approved, value: false });
           setDiscountAmount(0);
           return { ...data, amount: data.amount + 1 };
         }
       }
       if (data.id === e.target.id) {
-        setTotalPrice((prev) => ({
-          ...prev,
-          amount: prev.amount + data.price,
-          length: prev.length + 1,
-        }));
+        setTotalPrice({
+          ...totalPrice,
+          amount: totalPrice.amount + data.price,
+          length: totalPrice.length + 1,
+        });
         setApproved({ ...approved, alertChekout: false });
         setDiscountAmount(0);
         return { ...data, amount: data.amount + 1 };
@@ -128,14 +118,14 @@ export default function Order() {
 
   const minusButtonHandler = (e, idButton = null) => {
     e.preventDefault();
-    const filteredItems = itemsOrder.map((data) => {
+    const filteredItems = itemsOrder?.map((data, idx) => {
       if (idButton) {
         if (data.id === idButton && data.amount > 0) {
-          setTotalPrice((prev) => ({
-            ...prev,
-            amount: prev.amount - data.price,
-            length: prev.length - 1,
-          }));
+          setTotalPrice({
+            ...totalPrice,
+            amount: totalPrice.amount - data.price,
+            length: totalPrice.length - 1,
+          });
           setApproved({ ...approved, value: false });
           setDiscountAmount(0);
           if (totalPrice.length === 1 && currentPage === 2) {
@@ -149,11 +139,11 @@ export default function Order() {
         }
       }
       if (data.id === e.target.id && data.amount > 0) {
-        setTotalPrice((prev) => ({
-          ...prev,
-          amount: prev.amount - data.price,
-          length: prev.length - 1,
-        }));
+        setTotalPrice({
+          ...totalPrice,
+          amount: totalPrice.amount - data.price,
+          length: totalPrice.length - 1,
+        });
         setDiscountAmount(0);
         return { ...data, amount: data.amount - 1 };
       }
@@ -164,22 +154,22 @@ export default function Order() {
 
   const deleteItemHandler = (e, idButton = null) => {
     e.preventDefault();
-    const filteredItems = itemsOrder.map((data) => {
+    const filteredItems = itemsOrder?.map((data, idx) => {
       if (idButton) {
-        if (data.id === idButton && data.amount > 0) {
+        if (data.id == idButton && data.amount > 0) {
           const dataPrice = data.amount * data.price;
-          setTotalPrice((prev) => ({
-            ...prev,
-            amount: prev.amount - dataPrice,
-            length: prev.length - data.amount,
-          }));
+          setTotalPrice({
+            ...totalPrice,
+            amount: totalPrice.amount - dataPrice,
+            length: totalPrice.length - data.amount,
+          });
           setApproved({ ...approved, value: false });
           setDiscountAmount(0);
           if (totalPrice.length === data.amount) {
             setCurrentPage(0);
             setMenuCards(0);
           }
-          return { ...data, amount: 0, notes: "" };
+          return { ...data, amount: data.amount - data.amount, notes: "" };
         }
       }
       return data;
@@ -190,15 +180,18 @@ export default function Order() {
   const showModal = (e, dataId) => {
     e.preventDefault();
     setOpenModal(true);
-    itemsOrder.forEach((data) => {
-      if (data.id == e.target.id || data.id == dataId) {
+    itemsOrder.map((data, idx) => {
+      if (data.id == e.target.id) {
+        setDetailModal(data);
+      }
+      if (data.id == dataId) {
         setDetailModal(data);
       }
     });
   };
 
   const closeModal = (e, modalId) => {
-    const filteredItem = itemsOrder.map((data) => {
+    const filteredItem = itemsOrder.map((data, i) => {
       if (data.id === modalId) {
         return { ...data, notes: detailModal?.notes };
       }
@@ -207,6 +200,7 @@ export default function Order() {
     setItemsOrder(filteredItem);
     setOpenModal(false);
   };
+
 
   const handleChange = (event) => {
     setRadioChecked(event.target.value);
@@ -245,19 +239,8 @@ export default function Order() {
       });
     }
   };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!hasMoreMenus || isLoading) return;
-      if (
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 500
-      ) {
-        setSkipMenus((prev) => prev + limitMenus);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasMoreMenus, isLoading]);
+  
+  // console.log("checkout ===>", checkout )
 
   return (
     <>
@@ -269,25 +252,36 @@ export default function Order() {
           totalPrice={totalPrice}
         />
       ) : (
-        <div className="z-30 flex w-full justify-center">
+        <div className=" z-30 flex w-full justify-center">
           <m.div className="flex max-w-[414px] justify-center font-sans">
+            {/* ============ HEADER ============ */}
             <Header
               page={$Page[currentPage]}
               totalPrice={totalPrice.length}
               onClickOrder={() => {
                 setCurrentPage(0);
                 setMenuCards(0);
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.scrollTo({
+                  top: 0,
+                  behavior: "smooth",
+                });
               }}
               onClickFavorite={() => {
                 setCurrentPage(1);
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.scrollTo({
+                  top: 0,
+                  behavior: "smooth",
+                });
               }}
               onClickCart={() => {
                 setCurrentPage(2);
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.scrollTo({
+                  top: 0,
+                  behavior: "smooth",
+                });
               }}
             />
+            {/* ====== FOOTER (Total Price) ===== */}
             {totalPrice.length !== 0 && (
               <Footer
                 page={currentPage}
@@ -296,22 +290,24 @@ export default function Order() {
               />
             )}
             <div className="w-screen min-h-screen mt-[51px] bg-[#FFFFFF]">
+              {/* ========== SPA Render Components ========= */}
               <div className="w-full max-w-[414px] p-3 pb-[62px] h-full space-y-3 overflow-hidden">
-                {currentPage === 0 ? (
+                {currentPage == 0 ? (
                   <>
                     <TabMenu
-                      menusType={
-                        categories.length
-                          ? ["All", ...categories.map((category) => category.name)]
-                          : ["All"]
-                      }
+                      menusType={menusType}
                       menuCards={menuCards}
-                      onClick={tabMenuHandler}
+                      onClick={(e) => tabMenuHandler(e)}
                     />
+                    {/* ===== Order Section ===== */}
                     {isLoading && (
                       <m.div>
-                        <div className="flex h-screen -mt-[108px] w-full justify-center items-center">
-                          <Spinner color="success" aria-label="Loading spinner" />
+                        <div className=" flex h-screen -mt-[108px] w-full justify-center items-center">
+                          <Spinner
+                            color="success"
+                            aria-label="Success spinner example"
+                            className=""
+                          />
                         </div>
                       </m.div>
                     )}
@@ -319,12 +315,21 @@ export default function Order() {
                       initial={{ x: "-100%" }}
                       animate={{ x: "0%" }}
                       transition={{ duration: 0.3, ease: "easeOut" }}
-                      className="z-10 grid grid-cols-1 gap-2"
+                      className="z-10 grid grid-cols-1 gap-2 "
                     >
                       <div className="grid grid-cols-2 gap-3">
-                        {itemsOrder.map((data, idx) => {
-                          if (menuCards == 0 || menuCards == data?.type) {
-                            return (
+                        {/* ===== Order Cards ===== */}
+                        {itemsOrder?.map((data, idx) => {
+                          return menuCards == 0 ? (
+                            <MenuCards
+                              key={idx}
+                              onClickModal={showModal}
+                              data={data}
+                              onClickMinus={minusButtonHandler}
+                              onClickPlus={plusButtonHandler}
+                            />
+                          ) : (
+                            menuCards == data?.type && (
                               <MenuCards
                                 key={idx}
                                 onClickModal={showModal}
@@ -332,34 +337,37 @@ export default function Order() {
                                 onClickMinus={minusButtonHandler}
                                 onClickPlus={plusButtonHandler}
                               />
-                            );
-                          }
-                          return null;
+                            )
+                          );
                         })}
                       </div>
                     </m.div>
                   </>
-                ) : currentPage === 1 ? (
+                ) : currentPage == 1 ? (
                   <m.div
                     initial={{ x: "100%" }}
                     animate={{ x: "0%" }}
                     transition={{ duration: 0.3, ease: "easeOut" }}
                     className="grid grid-cols-2 gap-3"
                   >
-                    {itemsOrder.map((data, idx) =>
-                      data.favorite ? (
-                        <MenuCards
-                          key={idx}
-                          onClickModal={showModal}
-                          data={data}
-                          onClickMinus={minusButtonHandler}
-                          onClickPlus={plusButtonHandler}
-                        />
-                      ) : null
-                    )}
+                    {itemsOrder?.map((data, idx) => {
+                      return (
+                        <>
+                          {data.favorite && (
+                            <MenuCards
+                              onClickModal={showModal}
+                              data={data}
+                              onClickMinus={minusButtonHandler}
+                              onClickPlus={plusButtonHandler}
+                            />
+                          )}
+                        </>
+                      );
+                    })}
                   </m.div>
                 ) : (
-                  currentPage === 2 && (
+                  currentPage == 2 && (
+                    // ====================== PAGE CART ===================
                     <div className="flex flex-col">
                       <m.div
                         initial={{ x: "100%" }}
@@ -367,7 +375,7 @@ export default function Order() {
                         transition={{ duration: 0.3, ease: "easeOut" }}
                         className="flex flex-col"
                       >
-                        {totalPrice.amount !== 0 && (
+                        {totalPrice?.amount !== 0 ? (
                           <>
                             <OrderCart
                               itemsOrder={itemsOrder}
@@ -391,6 +399,8 @@ export default function Order() {
                               }}
                             />
                           </>
+                        ) : (
+                          ""
                         )}
                       </m.div>
                       <m.div
@@ -403,7 +413,7 @@ export default function Order() {
                           setRadioChecked={setRadioChecked}
                           handleChange={handleChange}
                           totalPrice={totalPrice}
-                          onChange={toggleHandler}
+                          onChange={(e) => toggleHandler(e)}
                           checked={approved.value}
                           showAlertBuy={approved.alertBuy}
                           showAlertChekout={approved.alertChekout}
@@ -415,6 +425,7 @@ export default function Order() {
                   )
                 )}
               </div>
+              {/* ======= MODAL ======= */}
               <ModalCard
                 detailModal={detailModal}
                 show={openModal}
