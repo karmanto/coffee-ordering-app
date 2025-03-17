@@ -47,11 +47,11 @@ export default function Order() {
   const limitMenus = 10;
 
   const [categories, setCategories] = useState([]);
-  const limitCategories = 10;
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const loadMenus = async () => {
     setIsLoading(true);
-    const data = await fetchMenus(skipMenus, limitMenus);
+    const data = await fetchMenus(skipMenus, limitMenus, selectedCategory);
     if (data && data.length < limitMenus) {
       setHasMoreMenus(false);
     }
@@ -64,14 +64,19 @@ export default function Order() {
   };
 
   const loadCategories = async () => {
-    const data = await fetchCategories(limitCategories);
+    const data = await fetchCategories();
+    data.sort((a, b) => a.id - b.id);
     setCategories(data);
   };
 
+  // Panggil loadMenus saat skipMenus atau selectedCategory berubah
   useEffect(() => {
     loadMenus();
+  }, [skipMenus, selectedCategory]);
+
+  useEffect(() => {
     loadCategories();
-  }, [skipMenus]);
+  }, []);
 
   useEffect(() => {
     if (currentPage === 0 || currentPage === 1) {
@@ -91,9 +96,27 @@ export default function Order() {
     }));
   }, [discountAmount]);
 
+  // Handler TabMenu. Reset pagination dan infinite scroll (hasMoreMenus)
   const tabMenuHandler = (e) => {
     e.preventDefault();
-    setMenuCards(e.target.id);
+    const categoryName = e.target.innerText;
+    console.log("category name", categoryName);
+    console.log("categories", categories);
+    if (categoryName === "All") {
+      setSelectedCategory(null);
+      setMenuCards(0);
+    } else {
+      const category = categories.find(
+        (cat) => cat.name.toLowerCase() === categoryName.toLowerCase()
+      );
+      if (category) {
+        setSelectedCategory(category.id);
+        setMenuCards(category.id);
+      }
+    }
+    // Reset pagination dan infinite scroll
+    setSkipMenus(0);
+    setHasMoreMenus(true);
   };
 
   const plusButtonHandler = (e, idButton = null) => {
@@ -322,20 +345,15 @@ export default function Order() {
                       className="z-10 grid grid-cols-1 gap-2"
                     >
                       <div className="grid grid-cols-2 gap-3">
-                        {itemsOrder.map((data, idx) => {
-                          if (menuCards == 0 || menuCards == data?.type) {
-                            return (
-                              <MenuCards
-                                key={idx}
-                                onClickModal={showModal}
-                                data={data}
-                                onClickMinus={minusButtonHandler}
-                                onClickPlus={plusButtonHandler}
-                              />
-                            );
-                          }
-                          return null;
-                        })}
+                        {itemsOrder.map((data, idx) => (
+                          <MenuCards
+                            key={idx}
+                            onClickModal={showModal}
+                            data={data}
+                            onClickMinus={minusButtonHandler}
+                            onClickPlus={plusButtonHandler}
+                          />
+                        ))}
                       </div>
                     </m.div>
                   </>
