@@ -55,11 +55,25 @@ export default function Order() {
     if (data && data.length < limitMenus) {
       setHasMoreMenus(false);
     }
-    if (skipMenus === 0) {
-      setItemsOrder(data);
-    } else {
-      setItemsOrder((prev) => [...prev, ...data]);
-    }
+    setItemsOrder((prev) => {
+      const existingItems = {};
+      prev.forEach((item) => {
+        existingItems[item.id] = item;
+      });
+      const mergedData = data.map((newItem) => {
+        if (existingItems[newItem.id]) {
+          return { 
+            ...newItem, 
+            amount: existingItems[newItem.id].amount,
+            notes: existingItems[newItem.id].notes
+          };
+        }
+        return newItem;
+      });
+      const fetchedIds = new Set(data.map((item) => item.id));
+      const remainingOldItems = prev.filter((item) => !fetchedIds.has(item.id));
+      return [...mergedData, ...remainingOldItems];
+    });
     setIsLoading(false);
   };
 
@@ -69,7 +83,6 @@ export default function Order() {
     setCategories(data);
   };
 
-  // Panggil loadMenus saat skipMenus atau selectedCategory berubah
   useEffect(() => {
     loadMenus();
   }, [skipMenus, selectedCategory]);
@@ -96,7 +109,6 @@ export default function Order() {
     }));
   }, [discountAmount]);
 
-  // Handler TabMenu. Reset pagination dan infinite scroll (hasMoreMenus)
   const tabMenuHandler = (e) => {
     e.preventDefault();
     const categoryName = e.target.innerText;
@@ -114,7 +126,6 @@ export default function Order() {
         setMenuCards(category.id);
       }
     }
-    // Reset pagination dan infinite scroll
     setSkipMenus(0);
     setHasMoreMenus(true);
   };
@@ -345,7 +356,12 @@ export default function Order() {
                       className="z-10 grid grid-cols-1 gap-2"
                     >
                       <div className="grid grid-cols-2 gap-3">
-                        {itemsOrder.map((data, idx) => (
+                        {(selectedCategory
+                          ? itemsOrder.filter(
+                              (item) => item.categoryId === selectedCategory
+                            )
+                          : itemsOrder
+                        ).map((data, idx) => (
                           <MenuCards
                             key={idx}
                             onClickModal={showModal}

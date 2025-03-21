@@ -1,8 +1,7 @@
 "use client";
-import { HeartIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import { HiOutlineMinus, HiOutlinePlus } from "react-icons/hi";
-import { FaEye } from "react-icons/fa6";
+// import { FaEye } from "react-icons/fa6";
 import { IoHeartCircleSharp } from "react-icons/io5";
 
 export const MenuCards = ({
@@ -31,12 +30,12 @@ export const MenuCards = ({
           quality={100}
           unoptimized
         />
-        <div
+        {/* <div
           onClick={onClickModal}
           className="hidden lg:flex opacity-0 group-hover:opacity-100 -mt-6 h-6 justify-center items-center text-white bg-black bg-opacity-60 rounded-t-xl transition-all duration-300"
         >
           <FaEye />
-        </div>
+        </div> */}
       </div>
       <div className="p-4 font-semibold overflow-hidden">
         <h1 className="text-[#333736] text-nowrap truncate">{data?.name}</h1>
