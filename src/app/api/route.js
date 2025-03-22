@@ -18,6 +18,22 @@ export const fetchMenus = async (skip = 0, limit = 10, categoryId = null) => {
   }
 };
 
+export const fetchDiscounts = async (date = null) => {
+  try {
+    if (!date) {
+      const today = new Date().toISOString().slice(0, 10);
+      date = today;
+    }
+    const dateQuery = `&date=${date}`;
+    const res = await fetch(`${API_URL}/api/discounts?${dateQuery}`);
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching menus:", error);
+    return [];
+  }
+};
+
 export const fetchCategories = async () => {
   try {
     const res = await fetch(`${API_URL}/api/categories`);
@@ -25,5 +41,17 @@ export const fetchCategories = async () => {
   } catch (error) {
     console.error("Error fetching categories:", error);
     return [];
+  }
+};
+
+
+
+export const fetchChairs = async (uuid) => {
+  try {
+    const res = await fetch(`${API_URL}/api/chairs/${uuid}`);
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching chair:", error);
+    return null;
   }
 };

@@ -11,18 +11,20 @@ import { VoucherPromo } from "@/app/components/voucherpromo";
 import { Done } from "@/app/components/done";
 import { OrderCart } from "@/app/components/ordercart";
 import { motion as m } from "framer-motion";
-import { fetchMenus, fetchCategories } from "@/app/api/route";
+import { fetchMenus, fetchCategories, fetchChairs, fetchDiscounts } from "@/app/api/route";
 
 const $Page = ["Order", "Best Seller", "Cart", "Logout"];
 
 export default function Order() {
   const [itemsOrder, setItemsOrder] = useState([]);
+  const [itemsDiscount, setItemsDiscount] = useState([]);
   const [totalPrice, setTotalPrice] = useState({
     amount: 0,
     length: 0,
     discounted: 0,
   });
   const [currentPage, setCurrentPage] = useState(0);
+  const [customerTable, setCustomerTable] = useState("");
   const [menuCards, setMenuCards] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [detailModal, setDetailModal] = useState(null);
@@ -83,12 +85,35 @@ export default function Order() {
     setCategories(data);
   };
 
+  const loadDiscounts = async () => {
+    const data = await fetchDiscounts();
+    console.log("discounts", data);
+    setItemsDiscount(data);
+  };
+
+  const loadChairs = async (uuid) => {
+    const data = await fetchChairs(uuid);
+
+    if (data) {
+      setCustomerTable(data.id);
+    }
+  };
+
   useEffect(() => {
     loadMenus();
   }, [skipMenus, selectedCategory]);
 
   useEffect(() => {
+    const queryString = window.location.search;
+    const params = new URLSearchParams(queryString);
+    const tableUUID = params.get("uuid"); 
+
+    if (tableUUID) { 
+      loadChairs(tableUUID);
+    }
+
     loadCategories();
+    loadDiscounts();
   }, []);
 
   useEffect(() => {
@@ -306,6 +331,7 @@ export default function Order() {
         <div className="z-30 flex w-full justify-center">
           <m.div className="flex max-w-[414px] justify-center font-sans">
             <Header
+              table={customerTable ? customerTable : ""}
               page={$Page[currentPage]}
               totalPrice={totalPrice.length}
               onClickOrder={() => {
@@ -412,6 +438,7 @@ export default function Order() {
                               showModal={showModal}
                             />
                             <VoucherPromo
+                              discountList={itemsDiscount}
                               totalPrice={totalPrice}
                               setTotalPrice={setTotalPrice}
                               discountAmount={discountAmount}

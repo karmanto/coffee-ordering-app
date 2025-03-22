@@ -11,6 +11,7 @@ export const VoucherPromo = ({
   setTotalPrice,
   discountAmount,
   setDiscountAmount,
+  discountList,
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -64,8 +65,8 @@ export const VoucherPromo = ({
         </div>
         {open && (
           <div className="flex flex-col px-[17px] py-1 font-semibold transition-all">
-            {arrButton?.map((data, idx) => {
-              const diskon = data / 100;
+            {discountList?.map((data, idx) => {
+              const diskon = data?.value / 100;
               return (
                 <button
                   key={idx}
@@ -75,16 +76,19 @@ export const VoucherPromo = ({
                       top: 1000,
                       behavior: "smooth",
                     });
-                    setDiscountAmount(data);
+                    setDiscountAmount(data?.value);
                     setOpen(false);
                   }}
-                  className={`flex px-3 py-2 text-sm justify-between rounded-xl transition-all ${
-                    discountAmount === data
+                  className={`flex px-3 py-2 text-sm rounded-xl transition-all ${
+                    discountAmount === data?.value
                       ? `bg-green-100`
                       : `hover:bg-green-100`
                   }`}
                 >
-                  <h1>Diskon {data}%</h1>
+                  <div className="flex flex-col flex-1 text-left">
+                    <p>{data?.name}</p> 
+                    <p>Diskon {data?.value}%</p>
+                  </div>
                   <span>Gunakan</span>
                 </button>
               );

@@ -16,6 +16,7 @@ export default function Header({
   onClickFavorite,
   onClickCart,
   totalPrice,
+  table
 }) {
   const router = useRouter();
 
@@ -46,7 +47,7 @@ export default function Header({
   ];
 
   return (
-    <div className="z-50 top-0 fixed w-full max-w-[414px] h-[52px] grid grid-cols-3 px-3 py-3 justify-between text-[#333736] text-lg font-semibold bg-[#FFFFFF] shadow-sm">
+    <div className="z-50 top-0 fixed w-full max-w-[414px] h-[52px] px-3 py-3 flex text-[#333736] text-lg font-semibold bg-[#FFFFFF] shadow-sm">
       <div className="flex items-center overflow-hidden">
         {page == "Order" ? (
           <Dropdown
@@ -91,7 +92,7 @@ export default function Header({
         )}
       </div>
       <button
-        className="flex justify-center font-bold"
+        className="flex justify-center flex-1 font-bold"
         onClick={() => {
           window.scrollTo({
             top: 0,
@@ -99,7 +100,7 @@ export default function Header({
           });
         }}
       >
-        {page}
+        {page} {table && `meja #${table}`}
       </button>
       <div className="flex justify-end items-center space-x-5">
         {buttonMenu.map((data, idx) => {
