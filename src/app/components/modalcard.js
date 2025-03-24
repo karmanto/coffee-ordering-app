@@ -39,7 +39,7 @@ export const ModalCard = ({
             </div>
             <div className="flex-col text-black font-semibold space-y-1">
               <div className="font-normal text-sm">
-                {detailModal?.description}
+                {detailModal?.desc}
               </div>
               <div className=" text-green-600">
                 Rp.{" "}
