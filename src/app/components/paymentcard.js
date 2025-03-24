@@ -89,7 +89,7 @@ export const PaymentCard = ({
         </div>
       </div>
       <div className="font-semibold">Metode Pembayaran</div>
-      <div className="px-2">
+      {/* <div className="px-2">
         {paymentArr?.map((data, i) => {
           return (
             <div key={i} className="flex items-center mb-4">
@@ -112,7 +112,7 @@ export const PaymentCard = ({
             </div>
           );
         })}
-      </div>
+      </div> */}
       <label className="flex w-full justify-between items-center cursor-pointer">
         <span className="text-sm font-medium text-gray-900 dark:text-gray-300">
           Saya sudah membaca pesanan

@@ -6,7 +6,7 @@ import { TbPlayerTrackNextFilled } from "react-icons/tb";
 import { FaRegSmileBeam } from "react-icons/fa";
 import { motion as m } from "framer-motion";
 
-export const Done = ({ checkout, discountAmount, totalPrice }) => {
+export const Done = ({ checkout, discountAmount, totalPrice, table }) => {
   const [dateOrder, setDateOrder] = useState(null);
   const [numbers, setNumbers] = useState({ table: [], order: [] });
 
@@ -25,7 +25,7 @@ export const Done = ({ checkout, discountAmount, totalPrice }) => {
 
   if (!dateOrder) {
     return (
-      <div className=" w-full flex justify-center font-mono">
+      <div className="w-full flex justify-center font-mono">
         <div className="flex flex-col px-4 justify-center min-h-screen w-[414px] bg-green-500 content-center"></div>
       </div>
     );
@@ -37,15 +37,54 @@ export const Done = ({ checkout, discountAmount, totalPrice }) => {
     minute: "2-digit",
   });
 
+  // Fungsi untuk membuat pesan WhatsApp
+  const generateWhatsAppMessage = () => {
+    let message = `Receipt:\nMeja: #${table}\nDate: ${formattedDate} | ${formattedTime}\n\nOrder Items:\n`;
+    
+    checkout?.order.forEach((data) => {
+      message += `${data.amount}x ${data.name}\n`;
+      if (data.notes && data.notes.trim() !== "") {
+        message += `Notes: ${data.notes}\n`;
+      }
+      message += `Price: Rp ${data.price
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}\n\n`;
+    });
+    
+    message += `Total: Rp ${totalPrice.amount
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}\n`;
+    
+    if (discountAmount !== 0) {
+      const diskon = ((discountAmount / 100) * totalPrice.amount);
+      message += `Diskon: -Rp ${diskon
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}\n`;
+    }
+    
+    message += `Grand Total: Rp ${totalPrice.discounted
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}\n`;
+    
+    message += `\n==== THANK YOU ====`;
+    return message;
+  };
+
+  // Mengambil nomor WhatsApp dari environment variable
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+  
+  // URL WhatsApp dengan pesan ter-encode
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(generateWhatsAppMessage())}`;
+
   return (
     <>
       <title>Coffee Ordering Mobile Web by Hassan Kaeru</title>
       <div className="w-full flex justify-center font-mono">
-        <div className="flex flex-col justify-center itemsb min-h-screen w-[414px] bg-green-500 content-center overflow-hidden">
-          <div className=" flex flex-col py-8 justify-center items-center mb-9">
-            <div className="z-10 flex p-4 justify-center rounded-full bg-white hover:scale-110 active:scale-110 transition-all ">
+        <div className="flex flex-col justify-center items-center min-h-screen w-[414px] bg-green-500 content-center overflow-hidden">
+          <div className="flex flex-col py-8 justify-center items-center mb-9">
+            <div className="z-10 flex p-4 justify-center rounded-full bg-white hover:scale-110 active:scale-110 transition-all">
               <span className="absolute mt-2.5 -mr-[24px] w-3 h-3 rounded-full bg-green-400 animate-ping"></span>
-              <span className="absolute mt-3 -mr-6 w-2 h-2 rounded-full bg-green-400 "></span>
+              <span className="absolute mt-3 -mr-6 w-2 h-2 rounded-full bg-green-400"></span>
               <AiOutlineFileDone className="flex w-16 h-16 p-3 text-white rounded-full bg-black shadow-lg" />
             </div>
             <div className="flex w-full justify-between bg-white h-[3px] -mt-[48px]">
@@ -56,7 +95,6 @@ export const Done = ({ checkout, discountAmount, totalPrice }) => {
           <div className="hidden px-4 text-center justify-center items-center text-white space-x-2">
             <span>Your order has been confirmed!</span>
             <span>
-              {" "}
               <FaRegSmileBeam />
             </span>
           </div>
@@ -66,7 +104,6 @@ export const Done = ({ checkout, discountAmount, totalPrice }) => {
               initial={{ y: "-100%" }}
               animate={{ y: "0%" }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className=""
             >
               <div className="flex flex-col items-center justify-center p-2 text-black bg-white border">
                 <div className="flex w-full justify-center items-center py-2 font-bold font-sans text-3xl text-white bg-green-600 transition-all">
@@ -77,53 +114,28 @@ export const Done = ({ checkout, discountAmount, totalPrice }) => {
                 <div className="w-full space-y-2">
                   <div className="flex flex-col px-2 py-2 border-b border-slate-500">
                     <div className="flex">
-                      <span className=" w-1/4">Bill No</span>
-                      <p className=" w-3/4">
-                        : #001
-                        {numbers?.order.map((number, idx) => (
-                          <span key={idx}>{number}</span>
-                        ))}
-                      </p>
+                      <span className="w-1/4">Meja</span>
+                      <p className="w-3/4">: #{table}</p>
                     </div>
                     <div className="flex">
-                      <span className=" w-1/4">Table</span>
-                      <p className="w-3/4">
-                        {" "}
-                        : #0
-                        {numbers?.table.map((number, idx) => (
-                          <span key={idx}>{number}</span>
-                        ))}
-                      </p>
-                    </div>
-                    <div className="flex">
-                      <span className=" w-1/4">Payment</span>
-                      <p className="w-3/4 capitalize">: {checkout.payment}</p>
-                    </div>
-                    <div className="flex">
-                      <span className=" w-1/4">Date</span>
-                      <p className=" w-3/4">
-                        : {formattedDate} | {formattedTime}
-                      </p>
-                    </div>
-                    <div className="flex">
-                      <span className=" w-1/4">On Shift</span>
-                      <p className=" w-3/4">: 8170 - HASSAN ASKARY</p>
+                      <span className="w-1/4">Date</span>
+                      <p className="w-3/4">: {formattedDate} | {formattedTime}</p>
                     </div>
                   </div>
                   <div className="flex flex-col px-2 w-full">
-                    <h1 className=" pb-1 text-center">Order Items:</h1>
+                    <h1 className="pb-1 text-center">Order Items:</h1>
                     <table className="border-spacing-3 table-fixed">
                       <tbody>
                         {checkout?.order.map((data, idx) => {
                           return (
-                            <tr key={idx} className="">
+                            <tr key={idx}>
                               <td className="pr-1 py-0 align-top">
                                 {data.amount}x{" "}
                               </td>
                               <td className="pr-1 py-0">
                                 <p className="py-0">{data.name}</p>
                                 {data.notes !== "" && (
-                                  <p className=" text-xs py-0">
+                                  <p className="text-xs py-0">
                                     Notes: {data.notes}
                                   </p>
                                 )}
@@ -140,17 +152,17 @@ export const Done = ({ checkout, discountAmount, totalPrice }) => {
                     </table>
                   </div>
                   <div className="border-b border-slate-500"></div>
-                  <div className="flex flex-col px-2 w-full ">
+                  <div className="flex flex-col px-2 w-full">
                     <table>
                       <tbody className="font-bold">
                         <tr>
-                          <td className="">{totalPrice.length} item</td>
+                          <td>{totalPrice.length} item</td>
                           <td className="text-right"></td>
                         </tr>
                         {discountAmount !== 0 && (
                           <>
-                            <tr className="">
-                              <td className="">Total</td>
+                            <tr>
+                              <td>Total</td>
                               <td className="text-right">
                                 Rp{" "}
                                 {totalPrice.amount
@@ -159,7 +171,7 @@ export const Done = ({ checkout, discountAmount, totalPrice }) => {
                               </td>
                             </tr>
                             <tr className="text-green-500">
-                              <td className="">Diskon</td>
+                              <td>Diskon</td>
                               <td className="text-right">
                                 - Rp{" "}
                                 {((discountAmount / 100) * totalPrice.amount)
@@ -169,8 +181,8 @@ export const Done = ({ checkout, discountAmount, totalPrice }) => {
                             </tr>
                           </>
                         )}
-                        <tr className=" text-lg">
-                          <td className="">Grand Total</td>
+                        <tr className="text-lg">
+                          <td>Grand Total</td>
                           <td className="text-right">
                             Rp{" "}
                             {totalPrice?.discounted
@@ -198,21 +210,17 @@ export const Done = ({ checkout, discountAmount, totalPrice }) => {
               </div>
             </m.div>
           </div>
-          <m.div
-            initial={{ y: "100%" }}
-            animate={{ y: "0%" }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="flex justify-center py-8 -mt-7"
-          >
-            <Link
-              href={"/"}
-              className="flex p-4 justify-center text-center font-bold font-mono text-2xl bg-black text-black active:text-gray-800 active:bg-gray-800 hover:scale-110 active:scale-110 rounded-full transition-all"
+          {/* Tautan WhatsApp untuk mengirim receipt */}
+          <div className="flex justify-center pb-8 pt-5">
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-green-600 text-white rounded-full hover:scale-105 transition-all"
             >
-              <h1 className="bg-white rounded-full p-2 transition-all">
-                <TbPlayerTrackNextFilled className="h-7 w-7 transition-all" />
-              </h1>
-            </Link>
-          </m.div>
+              Kirim Receipt via WhatsApp
+            </a>
+          </div>
         </div>
       </div>
     </>

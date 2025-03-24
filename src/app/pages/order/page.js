@@ -326,6 +326,7 @@ export default function Order() {
           checkout={checkout}
           discountAmount={discountAmount}
           totalPrice={totalPrice}
+          table={customerTable}
         />
       ) : (
         <div className="z-30 flex w-full justify-center">
