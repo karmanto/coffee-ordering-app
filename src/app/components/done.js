@@ -78,7 +78,7 @@ export const Done = ({ checkout, discountAmount, totalPrice, table }) => {
 
   return (
     <>
-      <title>Coffee Ordering Mobile Web by Hassan Kaeru</title>
+      <title>Menu Ordering Mobile Web by Karmanto Supono</title>
       <div className="w-full flex justify-center font-mono">
         <div className="flex flex-col justify-center items-center min-h-screen w-[414px] bg-green-500 content-center overflow-hidden">
           <div className="flex flex-col py-8 justify-center items-center mb-9">

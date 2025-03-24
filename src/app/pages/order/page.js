@@ -320,7 +320,7 @@ export default function Order() {
 
   return (
     <>
-      <title>Coffee Ordering Mobile Web by Hassan Kaeru</title>
+      <title>Menu Ordering Mobile Web by Karmanto Supono</title>
       {done ? (
         <Done
           checkout={checkout}

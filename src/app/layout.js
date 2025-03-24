@@ -4,7 +4,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Coffee Ordering Mobile Web by Hassan Kaeru",
+  title: "Menu Ordering Mobile Web by Karmanto Supono",
   description:
     "Say goodbye to waiting in line! Order your favorite coffee from the comfort of your seat and have it delivered directly to you.",
 };
