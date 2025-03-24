@@ -71,7 +71,7 @@ export const Done = ({ checkout, discountAmount, totalPrice, table }) => {
   };
 
   // Mengambil nomor WhatsApp dari environment variable
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "6285159554949";
   
   // URL WhatsApp dengan pesan ter-encode
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(generateWhatsAppMessage())}`;
