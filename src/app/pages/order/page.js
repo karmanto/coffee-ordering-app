@@ -87,7 +87,7 @@ export default function Order() {
 
   const loadDiscounts = async () => {
     const data = await fetchDiscounts();
-    console.log("discounts", data);
+    // console.log("discounts", data);
     setItemsDiscount(data);
   };
 
@@ -137,8 +137,8 @@ export default function Order() {
   const tabMenuHandler = (e) => {
     e.preventDefault();
     const categoryName = e.target.innerText;
-    console.log("category name", categoryName);
-    console.log("categories", categories);
+    // console.log("category name", categoryName);
+    // console.log("categories", categories);
     if (categoryName === "All") {
       setSelectedCategory(null);
       setMenuCards(0);
